@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kho Nạp Code Esp - ThienanhA3</title>
+  <link rel="icon" id="fav" href="" />
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;font-family:'Quicksand',system-ui,sans-serif;color:#4a1530;background-color:#fff0f6;background-attachment:fixed;background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='170' viewBox='0 0 260 170'%3E%3Cg fill='%23ec4899' fill-opacity='0.18' font-family='Quicksand,cursive,sans-serif' font-weight='700'%3E%3Ctext x='16' y='52' font-size='16' transform='rotate(-14 16 52)'%3E♥ ThienanhA3%3C/text%3E%3Ctext x='158' y='36' font-size='14'%3E✦%3C/text%3E%3Ctext x='126' y='136' font-size='16' transform='rotate(-14 126 136)'%3EThienanhA3 ✿%3C/text%3E%3Ctext x='48' y='132' font-size='14'%3E♡%3C/text%3E%3C/g%3E%3C/svg%3E"),linear-gradient(160deg,#fff0f6 0%,#ffe4f0 55%,#ffd6e8 100%)}
+    header{background:rgba(255,255,255,.86);backdrop-filter:blur(10px);border-bottom:2px solid #fbcfe8;padding:18px 16px;box-shadow:0 4px 20px rgba(236,72,153,.08)}
+    .wrap{max-width:1120px;margin:0 auto}
+    .channel{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+    .avatar{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#f472b6,#ec4899);border:3px solid #f472b6;box-shadow:0 4px 14px rgba(236,72,153,.28);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.25rem;color:#fff;flex-shrink:0;overflow:hidden}
+    .avatar img{width:100%;height:100%;object-fit:cover;display:none}
+    .channel h1{margin:0;font-size:1.3rem;color:#831843}
+    .channel p{margin:4px 0 0;color:#9d4e73;font-size:.88rem;font-weight:600}
+    .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+    .tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+    .tab{background:#fce7f3;color:#9d174d;border:1px solid #f9a8d4;padding:7px 14px;border-radius:999px;font:700 .88rem inherit;cursor:pointer;white-space:nowrap}
+    .tab.active{background:linear-gradient(135deg,#ec4899,#f43f5e);color:#fff;border-color:transparent;box-shadow:0 3px 10px rgba(236,72,153,.3)}
+    .search{background:#fff;border:1.5px solid #f9a8d4;color:#4a1530;padding:8px 15px;border-radius:999px;font:600 .9rem inherit;width:260px;max-width:100%;outline:none}
+    .search:focus{border-color:#ec4899;box-shadow:0 0 0 3px rgba(236,72,153,.15)}
+    main{max-width:1120px;margin:20px auto;padding:0 16px 36px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
+    .card{background:rgba(255,255,255,.93);border:1.5px solid #fbcfe8;border-radius:20px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 8px 24px rgba(236,72,153,.1)}
+    .thumb{position:relative;width:100%;aspect-ratio:16/9;background:linear-gradient(135deg,#f9a8d4,#fbcfe8 55%,#f5d0fe);display:flex;align-items:center;justify-content:center;padding:18px;text-align:center}
+    .thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+    .thumb-title{position:relative;font-weight:700;font-size:1.12rem;color:#831843}
+    .badge{position:absolute;bottom:10px;right:10px;padding:4px 10px;border-radius:999px;font-size:.75rem;font-weight:700;background:rgba(255,255,255,.95)}
+    .badge.ESP8266{border:1.5px solid #10b981;color:#059669}
+    .badge.ESP32-C3{border:1.5px solid #3b82f6;color:#2563eb}
+    .badge.ESP32{border:1.5px solid #f59e0b;color:#d97706}
+    .badge.ESP32-S3{border:1.5px solid #a855f7;color:#7e22ce}
+    .body{padding:16px;display:flex;flex-direction:column;flex:1}
+    .title{margin:0 0 6px;font-size:1.06rem;color:#831843}
+    .desc{margin:0 0 12px;font-size:.88rem;color:#7c4a63;line-height:1.5;font-weight:500}
+    details{background:#fff5f9;border:1.5px dashed #f9a8d4;border-radius:12px;padding:9px 12px;margin-bottom:14px;font-size:.84rem;color:#6b2b4a}
+    summary{cursor:pointer;font-weight:700;color:#be185d}
+    .pinout{margin-top:8px;white-space:pre-line;line-height:1.55;font-weight:600}
+    .actions{margin-top:auto;display:flex;flex-direction:column;gap:8px}
+    .btn-flash{width:100%;background:linear-gradient(135deg,#ec4899,#f43f5e);color:#fff;border:none;padding:11px;border-radius:12px;font:700 .95rem inherit;cursor:pointer;box-shadow:0 4px 12px rgba(236,72,153,.28)}
+    .btn-yt{display:block;text-align:center;text-decoration:none;background:#fce7f3;color:#9d174d;border:1px solid #f9a8d4;padding:9px;border-radius:12px;font-size:.86rem;font-weight:700}
+    .unsupported-msg{display:block;font-size:.82rem;font-weight:700;color:#be123c;background:#ffe4e6;border-radius:10px;text-align:center;padding:8px}
+    .empty{text-align:center;color:#9d4e73;font-weight:600;padding:40px 0}
+    footer{text-align:center;padding:16px;font-size:.85rem;font-weight:700;color:#be185d}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="channel">
+        <div class="avatar"><img id="logoImg" alt="ThienanhA3" /><span id="logoTxt">A3</span></div>
+        <div>
+          <h1>Kho Nạp Code Esp - ThienanhA3</h1>
+          <p>Cắm mạch vào máy tính (Chrome/Edge) → Chọn dự án → Chọn COM &amp; Nạp</p>
+        </div>
+      </div>
+      <div class="controls">
+        <div class="tabs" id="tabs">
+          <button class="tab active" data-chip="ALL">Tất cả</button>
+          <button class="tab" data-chip="ESP8266">ESP8266</button>
+          <button class="tab" data-chip="ESP32">ESP32</button>
+          <button class="tab" data-chip="ESP32-C3">ESP32-C3</button>
+          <button class="tab" data-chip="ESP32-S3">ESP32-S3</button>
+        </div>
+        <input type="text" id="search" class="search" placeholder="Tìm dự án..." />
+      </div>
+    </div>
+  </header>
+  <main><div class="grid" id="grid"></div></main>
+  <footer>♥ ThienanhA3 • ESP Firmware Hub ✿</footer>
+  <script>
+    fetch("https://api.github.com/repos/thienanhnguy/esp-hub_ThienanhA3/contents/")
+      .then(r => r.json())
+      .then(files => {
+        const img = Array.isArray(files) && files.find(f => f.type === "file" && /\.(jpe?g|png|webp)$/i.test(f.name));
+        if (img && img.download_url) {
+          const el = document.getElementById("logoImg");
+          el.onload = () => { el.style.display = "block"; document.getElementById("logoTxt").style.display = "none"; };
+          el.src = img.download_url;
+          document.getElementById("fav").href = img.download_url;
+        }
+      }).catch(() => {});
+
+    const PROJECTS = [
+      {
+        title: "Gửi ảnh lên màn hình ST7735 qua WiFi",
+        chip: "ESP8266",
+        manifest: "./manifests/esp8266_tft_anh.json",
+        desc: "Phát WiFi ESP-TFT, vào 192.168.4.1 chọn ảnh, kéo zoom và gửi thẳng lên màn hình 160x128.",
+        pinout: "WiFi: ESP-TFT | Pass: 12345678 | IP: 192.168.4.1\n• CS → D8 (GPIO15)\n• DC → D4 (GPIO2)\n• RST → D0 (GPIO16)\n• SCL → D5 | SDA → D7 | BLK → 3V3",
+        thumb: "",
+        video: ""
+      }
+    ];
+
+    let chip = "ALL", kw = "";
+    const grid = document.getElementById("grid");
+    function render() {
+      const list = PROJECTS.filter(p => (chip === "ALL" || p.chip === chip) && (p.title + " " + p.desc + " " + p.chip).toLowerCase().includes(kw));
+      grid.innerHTML = list.length ? "" : '<div class="empty">Chưa có dự án nào trong mục này ✿</div>';
+      list.forEach(p => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `<div class="thumb">${p.thumb ? `<img src="${p.thumb}">` : `<div class="thumb-title">${p.title}</div>`}<span class="badge ${p.chip}">${p.chip}</span></div><div class="body"><h2 class="title">${p.title}</h2><p class="desc">${p.desc}</p><details><summary>Xem sơ đồ chân &amp; thông tin</summary><div class="pinout">${p.pinout}</div></details><div class="actions"><esp-web-install-button manifest="${p.manifest}"><button slot="activate" class="btn-flash">Chọn cổng COM &amp; Nạp</button><span slot="unsupported" class="unsupported-msg">Mở bằng Chrome/Edge trên máy tính để nạp</span></esp-web-install-button>${p.video ? `<a class="btn-yt" href="${p.video}" target="_blank">Xem video hướng dẫn</a>` : ""}</div></div>`;
+        grid.appendChild(card);
+      });
+    }
+    document.getElementById("tabs").onclick = e => {
+      if (!e.target.classList.contains("tab")) return;
+      document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
+      e.target.classList.add("active");
+      chip = e.target.dataset.chip;
+      render();
+    };
+    document.getElementById("search").oninput = e => { kw = e.target.value.trim().toLowerCase(); render(); };
+    render();
+  </script>
+</body>
+</html>
