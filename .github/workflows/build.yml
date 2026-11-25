@@ -1,0 +1,81 @@
+name: Build & Deploy ESP Hub
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Arduino CLI
+        uses: arduino/setup-arduino-cli@v2
+
+      - name: Install ESP Cores & Libraries
+        run: |
+          arduino-cli config init
+          arduino-cli config add board_manager.additional_urls https://arduino.esp8266.com/stable/package_esp8266com_index.json
+          arduino-cli config add board_manager.additional_urls https://espressif.github.io/arduino-esp32/package_esp32_index.json
+          arduino-cli core update-index
+          arduino-cli core install esp8266:esp8266 esp32:esp32@3.1.1
+          arduino-cli lib install "Adafruit ST7735 and ST7789 Library" "Adafruit GFX Library" "GFX Library for Arduino" "NimBLE-Arduino"
+
+      - name: Compile Sketches & Build Site
+        shell: bash
+        run: |
+          shopt -s nullglob
+          mkdir -p public/manifests public/bin
+          cp index.html public/
+
+          build_chip() {
+            local folder=$1 fqbn=$2 family=$3
+            for dir in sketches/$folder/*/; do
+              [ -d "$dir" ] || continue
+              local name=$(basename "$dir")
+              local out="public/bin/$folder/$name"
+              mkdir -p "$out"
+              arduino-cli compile --fqbn "$fqbn" --output-dir "$out" "$dir"
+
+              if [ -f "$out/$name.ino.merged.bin" ]; then
+                printf '{"name":"%s","version":"1.0","builds":[{"chipFamily":"%s","parts":[{"path":"../bin/%s/%s/%s.ino.merged.bin","offset":0}]}]}\n' \
+                  "$name" "$family" "$folder" "$name" "$name" > "public/manifests/${folder}_${name}.json"
+              elif [ -f "$out/$name.ino.bootloader.bin" ]; then
+                local boff=0
+                [ "$family" = "ESP32" ] && boff=4096
+                printf '{"name":"%s","version":"1.0","builds":[{"chipFamily":"%s","parts":[{"path":"../bin/%s/%s/%s.ino.bootloader.bin","offset":%d},{"path":"../bin/%s/%s/%s.ino.partitions.bin","offset":32768},{"path":"../bin/%s/%s/%s.ino.bin","offset":65536}]}]}\n' \
+                  "$name" "$family" "$folder" "$name" "$name" "$boff" "$folder" "$name" "$name" "$folder" "$name" "$name" > "public/manifests/${folder}_${name}.json"
+              else
+                printf '{"name":"%s","version":"1.0","builds":[{"chipFamily":"%s","parts":[{"path":"../bin/%s/%s/%s.ino.bin","offset":0}]}]}\n' \
+                  "$name" "$family" "$folder" "$name" "$name" > "public/manifests/${folder}_${name}.json"
+              fi
+            done
+          }
+
+          build_chip "esp8266" "esp8266:esp8266:nodemcuv2" "ESP8266"
+          build_chip "esp32"   "esp32:esp32:esp32" "ESP32"
+          build_chip "esp32c3" "esp32:esp32:esp32c3:CDCOnBoot=cdc" "ESP32-C3"
+          build_chip "esp32s3" "esp32:esp32:esp32s3:FlashSize=16M,PSRAM=opi,PartitionScheme=huge_app,CDCOnBoot=cdc" "ESP32-S3"
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+        
